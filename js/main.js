@@ -30,5 +30,5 @@ const getNumberFloating = function(number1, number2, floatingLength) {
   } return 'Принимаются только положительные числа';
 };
 
-console.log('Случайное целое число: ', getNumber(1, 2));
-console.log('Случайное число с плавающей точкой: ', getNumberFloating(1.3, 2.5, 4));
+getNumber (1.5, 2.5);
+getNumberFloating (1.5, 2.5, 3);
