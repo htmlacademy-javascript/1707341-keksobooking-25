@@ -102,7 +102,7 @@ let advertArray = [];
 const getAdvertArray = () => {
   for (let i = 0; i < ADVERT_ARRAY_LENGTH; i++) {
     let avatarCount = 0;
-    if (i < 10) {
+    if (i < 9) {
       avatarCount = `${0}${(i+1)}`;
     } else {
       avatarCount = i;
