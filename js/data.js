@@ -34,7 +34,8 @@ const ADVERT_FEATURES = [
   'dishwasher',
   'parking',
   'elevator',
-  'conditioner'
+  'conditioner',
+  'washer'
 ];
 
 const ADVERT_DESC = [
@@ -56,10 +57,10 @@ const ADVERT_ARRAY_LENGTH = 10;
 let advertArray = [];
 //создание массива предложений
 const getAdvertArray = () => {
-  for (let i = 0; i < ADVERT_ARRAY_LENGTH; i++) {
-    let avatarCount = 0;
-    if (i < 9) {
-      avatarCount = `${0}${(i+1)}`;
+  for (let i = 1; i <= ADVERT_ARRAY_LENGTH; i++) {
+    let avatarCount = 1;
+    if (i < 10) {
+      avatarCount = `${0}${(i)}`;
     } else {
       avatarCount = i;
     }
@@ -82,7 +83,7 @@ const getAdvertArray = () => {
         checkout: getRandomArrayElement(ADVERT_CHECKOUT),
         features: getShuffledSlicedArray(ADVERT_FEATURES),
         description: getRandomArrayElement(ADVERT_DESC),
-        photos: getNewRandomLengthArray(ADVERT_PHOTOS, 20)
+        photos: getNewRandomLengthArray(ADVERT_PHOTOS, 6)
       }
     };
     advert.offer.address = `${advert.location.lat}, ${advert.location.lng}`;
