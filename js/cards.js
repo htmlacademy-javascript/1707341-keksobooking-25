@@ -8,30 +8,37 @@ const newCardTemplate = cardsTemplate.querySelector('.popup');
 advertArray.forEach((advert) => {
   const newCard = newCardTemplate.cloneNode(true);
   const offer = advert.offer;
+  const setTextValue = function (classSelector, textValue){
+    if (textValue === undefined) {
+      newCard.querySelector(classSelector).remove();
+    } else {
+      newCard.querySelector(classSelector).textContent = textValue;
+    }
+  };
   //заголовок
-  newCard.querySelector('.popup__title').textContent = offer.title;
+  setTextValue('.popup__title', offer.title);
   //координаты
-  newCard.querySelector('.popup__text--address').textContent = offer.address;
+  setTextValue('.popup__text--address', offer.address);
   //цена
   if (offer.price === undefined) {
-    newCard.querySelector('.popup__text--price').textContent = '';
+    setTextValue('.popup__text--price', undefined);
   } else {
-    newCard.querySelector('.popup__text--price').textContent = `${offer.price} ₽/ночь`;
+    setTextValue('.popup__text--price', `${offer.price} ₽/ночь`);
   }
   //количество комнат и гостей
-  if (offer.rooms === undefined || offer.guests === undefined){
-    newCard.querySelector('.popup__text--capacity').textContent = '';
+  if (offer.rooms === undefined || offer.guests === undefined) {
+    setTextValue('.popup__text--capacity', undefined);
   } else {
-    newCard.querySelector('.popup__text--capacity').textContent = `${offer.rooms} комнаты для ${offer.guests} гостей`;
+    setTextValue('.popup__text--capacity', `${offer.rooms} комнаты для ${offer.guests} гостей`);
   }
   //время заезда и выезда
-  if (offer.checkin === undefined || offer.checkout === undefined){
-    newCard.querySelector('.popup__text--time').textContent = '';
+  if (offer.checkin === undefined || offer.checkout === undefined) {
+    setTextValue('.popup__text--time', undefined);
   } else {
-    newCard.querySelector('.popup__text--time').textContent = `Заезд после ${offer.checkin}, выезд до ${offer.checkout}`;
+    setTextValue('.popup__text--time', `Заезд после ${offer.checkin}, выезд до ${offer.checkout}`);
   }
   //описание
-  newCard.querySelector('.popup__description').textContent = offer.description;
+  setTextValue('.popup__description', offer.description);
   //тип здания
   switch (offer.type) {
     case 'flat':
@@ -50,15 +57,14 @@ advertArray.forEach((advert) => {
       newCard.querySelector('.popup__type').textContent = 'Отель';
       break;
     case undefined:
-      newCard.querySelector('.popup__type').textContent = '';
+      newCard.querySelector('.popup__type').remove();
       break;
   }
   //доступные удобства
-  const newCardFeatures = newCard.querySelectorAll('.popup__features .popup__feature');
+  const newCardFeatureList = newCard.querySelector('.popup__features');
+  const newCardFeatures = newCardFeatureList.querySelectorAll('.popup__feature');
   if (offer.features === undefined ) {
-    newCardFeatures.forEach((newCardFeature) => {
-      newCardFeature.remove();
-    });
+    newCardFeatureList.remove();
   } else {
     newCardFeatures.forEach((newCardFeature) => {
       const isContained = offer.features.some((arrayFeature) =>
@@ -83,18 +89,10 @@ advertArray.forEach((advert) => {
       const newCardPhoto = newCardPhotoTemplate.cloneNode(true);
       newCardPhoto.src = offer.photos[i];
       newCardPhotos.appendChild(newCardPhoto);
+      newCardPhotoTemplate.remove();
     }
-  }
-  newCardPhotoTemplate.remove();
-  //подчистить пустые элементы
-  for (let child = newCard.firstElementChild; child !== null;) {
-    if (child.textContent.trim() === '' & 'src' in child === false & child.children === 0) {
-      const childPlaceholder = child;
-      child = child.nextElementSibling;
-      childPlaceholder.remove();
-      continue;
-    }
-    child = child.nextElementSibling;
+  } else {
+    newCardPhotos.remove();
   }
   //добавление карточки в фрагмент
   cardsFragment.appendChild(newCard);
