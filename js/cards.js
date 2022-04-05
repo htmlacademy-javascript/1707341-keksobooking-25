@@ -9,7 +9,7 @@ advertArray.forEach((advert) => {
   const newCard = newCardTemplate.cloneNode(true);
   const offer = advert.offer;
   const setTextValue = function (classSelector, textValue){
-    if (textValue === undefined) {
+    if (!textValue) {
       newCard.querySelector(classSelector).remove();
     } else {
       newCard.querySelector(classSelector).textContent = textValue;
@@ -40,26 +40,21 @@ advertArray.forEach((advert) => {
   //описание
   setTextValue('.popup__description', offer.description);
   //тип здания
-  switch (offer.type) {
-    case 'flat':
-      newCard.querySelector('.popup__type').textContent = 'Квартира';
-      break;
-    case 'bungalow':
-      newCard.querySelector('.popup__type').textContent = 'Бунгало';
-      break;
-    case 'house':
-      newCard.querySelector('.popup__type').textContent = 'Дом';
-      break;
-    case 'palace':
-      newCard.querySelector('.popup__type').textContent = 'Дворец';
-      break;
-    case 'hotel':
-      newCard.querySelector('.popup__type').textContent = 'Отель';
-      break;
-    case undefined:
-      newCard.querySelector('.popup__type').remove();
-      break;
-  }
+  const getType = function (source){
+    switch (source) {
+      case 'flat':
+        return 'Квартира';
+      case 'bungalow':
+        return 'Бунгало';
+      case 'house':
+        return 'Дом';
+      case 'palace':
+        return 'Дворец';
+      case 'hotel':
+        return 'Отель';
+    }
+  };
+  setTextValue('.popup__type', getType(offer.type));
   //доступные удобства
   const newCardFeatureList = newCard.querySelector('.popup__features');
   const newCardFeatures = newCardFeatureList.querySelectorAll('.popup__feature');
