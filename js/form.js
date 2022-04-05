@@ -3,31 +3,32 @@ const formFieldsets = form.querySelectorAll('fieldset');
 const filters = document.querySelector('.map__filters');
 const filtersFieldsets = filters.querySelectorAll('fieldset');
 const filtersSelect = filters.querySelectorAll('select');
+const formPrice = form.querySelector('#price');
 
 //из модуля 7 задания 2 функции перевода страницы в активное/неактивное состояние
 const disablePage = function () {
   form.classList.add('ad-form--disabled');
   filters.classList.add('map__filters--disabled');
-  const disableArray = function (array) {
-    for (let i = 0; i < array.length; i++) {
-      array[i].setAttribute('disabled','');
+  const disableNodeList = function (nodeList) {
+    for (let i = 0; i < nodeList.length; i++) {
+      nodeList[i].setAttribute('disabled','');
     }
   };
-  disableArray(formFieldsets);
-  disableArray(filtersFieldsets);
-  disableArray(filtersSelect);
+  disableNodeList(formFieldsets);
+  disableNodeList(filtersFieldsets);
+  disableNodeList(filtersSelect);
 };
 const enablePage = function () {
   form.classList.remove('ad-form--disabled');
   filters.classList.remove('map__filters--disabled');
-  const enableArray = function (array) {
-    for (let i = 0; i < array.length; i++) {
-      array[i].removeAttribute('disabled');
+  const enableNodeList = function (nodeList) {
+    for (let i = 0; i < nodeList.length; i++) {
+      nodeList[i].removeAttribute('disabled');
     }
   };
-  enableArray(formFieldsets);
-  enableArray(filtersFieldsets);
-  enableArray(filtersSelect);
+  enableNodeList(formFieldsets);
+  enableNodeList(filtersFieldsets);
+  enableNodeList(filtersSelect);
 };
 
 // проставление всем полям ввода с аттрибутами стандартных сообщений об ошибке
@@ -52,13 +53,13 @@ const setInputErrorMessages = function(formWithInputs) {
     if (inputs[i].getAttribute('type') === 'number') {
       inputs[i].setAttribute('data-pristine-number-message','Пожалуйста, введите число');
     }
-    if (inputs[i].hasAttribute('min')) {
-      const inputMin = inputs[i].getAttribute('min');
-      inputs[i].setAttribute('data-pristine-min-message',`Минимальное значение ${inputMin}`);
-    }
   }
 };
 setInputErrorMessages(form);
+
+//фикс стандартной ошибки минимального значения для цены
+const formPricePlaceholder = formPrice.min;
+formPrice.min = Number.NEGATIVE_INFINITY;
 
 // валидатор
 const pristine = new Pristine(form, {
@@ -70,7 +71,7 @@ const pristine = new Pristine(form, {
 
 //поля типа жилья и цены за ночь
 const formType = form.querySelector('#type');
-const formPrice = form.querySelector('#price');
+formPrice.min = formPricePlaceholder;
 //установление минимальной цены в зависимости от типа жилья
 const setMinPrice = function() {
   const type = formType.value;
@@ -92,11 +93,19 @@ const setMinPrice = function() {
       break;
   }
   formPrice.setAttribute('min', minPrice);
-  formPrice.setAttribute('data-pristine-min-message', `Минимальное значение ${minPrice}`);
   formPrice.setAttribute('placeholder', minPrice);
-  pristine.validate(formPrice);
 };
-formType.addEventListener ('change', setMinPrice);
+
+//кастомный валидатор для минимальной цены
+pristine.addValidator(formPrice, (value) => {
+  const valueNumber = Number(value);
+  return valueNumber >= formPrice.min;
+}, () => `Минимальное значение ${formPrice.min}`);
+
+formType.addEventListener ('change', () =>{
+  setMinPrice();
+  pristine.validate(formPrice);
+});
 
 //синхронизация времени заезда и выезда
 const timeinSelect = form.querySelector('#timein');
@@ -115,30 +124,19 @@ timeoutSelect.addEventListener ('change', () => {
 //поля количества комнат и количества мест
 const formCapacity = form.querySelector('#capacity');
 const formRooms = form.querySelector('#room_number');
-//кастомный валидатор
+
+//кастомный валидатор для количества мест
 pristine.addValidator(formCapacity, (value) => {
   const roomsNumber = formRooms.value;
   switch (roomsNumber){
     case '1':
-      if (value === '1') {
-        return true;
-      }
-      break;
+      return (value === '1');
     case '2':
-      if (value === '1' || value === '2') {
-        return true;
-      }
-      break;
+      return (value === '1' || value === '2');
     case '3':
-      if (value === '1' || value === '2' || value === '3') {
-        return true;
-      }
-      break;
+      return (value === '1' || value === '2' || value === '3');
     case '100':
-      if (value === '0') {
-        return true;
-      }
-      break;
+      return (value === '0');
   }
   return false;
 }, 'Недопустимое значение');
