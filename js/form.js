@@ -1,35 +1,6 @@
+import {setDigitsAfterPoint} from './form-util.js';
 const form = document.querySelector('.ad-form');
-const formFieldsets = form.querySelectorAll('fieldset');
-const filters = document.querySelector('.map__filters');
-const filtersFieldsets = filters.querySelectorAll('fieldset');
-const filtersSelect = filters.querySelectorAll('select');
 const formPrice = form.querySelector('#price');
-
-//из модуля 7 задания 2 функции перевода страницы в активное/неактивное состояние
-const disablePage = function () {
-  form.classList.add('ad-form--disabled');
-  filters.classList.add('map__filters--disabled');
-  const disableNodeList = function (nodeList) {
-    for (let i = 0; i < nodeList.length; i++) {
-      nodeList[i].setAttribute('disabled','');
-    }
-  };
-  disableNodeList(formFieldsets);
-  disableNodeList(filtersFieldsets);
-  disableNodeList(filtersSelect);
-};
-const enablePage = function () {
-  form.classList.remove('ad-form--disabled');
-  filters.classList.remove('map__filters--disabled');
-  const enableNodeList = function (nodeList) {
-    for (let i = 0; i < nodeList.length; i++) {
-      nodeList[i].removeAttribute('disabled');
-    }
-  };
-  enableNodeList(formFieldsets);
-  enableNodeList(filtersFieldsets);
-  enableNodeList(filtersSelect);
-};
 
 // проставление всем полям ввода с аттрибутами стандартных сообщений об ошибке
 const setInputErrorMessages = function(formWithInputs) {
@@ -107,6 +78,23 @@ formType.addEventListener ('change', () =>{
   pristine.validate(formPrice);
 });
 
+// слайдер цены
+const priceSlider = form.querySelector('.ad-form__slider');
+noUiSlider.create(priceSlider, {
+  range: {
+    //не знаю, нужно ли менять минимальное значение слайдера при смене типа жилья, учитывая, что в текстовом поле при изменении типа жилья текущее значение не меняется
+    min: 0,
+    max: Number(formPrice.max),
+  },
+  start: Number(formPrice.placeholder),
+  step: 1,
+});
+priceSlider.noUiSlider.on('update', () => {
+  formPrice.value = priceSlider.noUiSlider.get();
+  formPrice.value = setDigitsAfterPoint(formPrice.value, 0);
+  pristine.validate(formPrice);
+});
+
 //синхронизация времени заезда и выезда
 const timeinSelect = form.querySelector('#timein');
 const timeoutSelect = form.querySelector('#timeout');
@@ -152,6 +140,3 @@ form.addEventListener('submit', (evt) => {
     form.submit();
   }
 });
-
-disablePage();
-enablePage();
