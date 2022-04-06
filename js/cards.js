@@ -19,6 +19,8 @@ advertArray.forEach((advert) => {
   setTextValue('.popup__title', offer.title);
   //координаты
   setTextValue('.popup__text--address', offer.address);
+  setTextValue('.popup__lng', advert.location.lng);
+  setTextValue('.popup__lat', advert.location.lat);
   //цена
   if (offer.price === undefined) {
     setTextValue('.popup__text--price', undefined);
