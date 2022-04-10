@@ -1,13 +1,10 @@
-import {getData} from './api.js';
-
-const cardsFragment = document.createDocumentFragment();
 const cardsTemplate = document.querySelector('#card').content;
 const newCardTemplate = cardsTemplate.querySelector('.popup');
 
 //создание карточки объявления
-const createAdvertArray = function (dataArray, length) {
-  const slicedDataArray = dataArray.slice(0, length);
-  slicedDataArray.forEach((advert) => {
+const createAdvertArray = function (dataArray) {
+  const cardsFragment = document.createDocumentFragment();
+  dataArray.forEach((advert) => {
     const newCard = newCardTemplate.cloneNode(true);
     const offer = advert.offer;
     const setTextValue = function (classSelector, textValue){
@@ -96,15 +93,7 @@ const createAdvertArray = function (dataArray, length) {
     //добавление карточки в фрагмент
     cardsFragment.appendChild(newCard);
   });
+  return cardsFragment;
 };
 
-getData(
-  ((data) => {
-    createAdvertArray(data, 10);
-  }),
-  ((err) => {
-    console.log(err);
-  })
-);
-console.log (cardsFragment);
-export {cardsFragment};
+export {createAdvertArray};

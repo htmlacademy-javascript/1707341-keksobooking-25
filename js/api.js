@@ -7,7 +7,6 @@ const getData = (onSuccess, onFail) => {
       throw new Error (`${response.status} ${response.statusText}`);
     })
     .then((data) => {
-      console.log(data);
       onSuccess(data);
     })
     .catch ((err) => {

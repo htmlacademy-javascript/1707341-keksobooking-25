@@ -1,7 +1,7 @@
 import {enablePage, disablePage, setDigitsAfterPoint} from './form-util.js';
-import {cardsFragment} from './cards.js';
+import {createAdvertArray} from './cards.js';
+import {getData} from './api.js';
 disablePage();
-
 //инициализация карты
 const map = L.map('map-canvas')
   .on('load', () => {
@@ -67,21 +67,32 @@ const auxPinIcon = L.icon({
   iconAnchor: [20, 40],
 });
 
-const cards = cardsFragment.children;
+const createCards = function (cardsFragment){
+  const cardsCollection = cardsFragment.children;
+  for (const card of cardsCollection){
+    const lat = card.querySelector('.popup__lat').textContent;
+    const lng = card.querySelector('.popup__lng').textContent;
+    const marker = L.marker(
+      {
+        lat,
+        lng,
+      },
+      {
+        auxPinIcon,
+      },
+    );
+    marker
+      .addTo(map)
+      .bindPopup(card);
+  }
+};
 
-for (const card of cards){
-  const lat = card.querySelector('.popup__lat').textContent;
-  const lng = card.querySelector('.popup__lng').textContent;
-  const marker = L.marker(
-    {
-      lat,
-      lng,
-    },
-    {
-      auxPinIcon,
-    },
-  );
-  marker
-    .addTo(map)
-    .bindPopup(card);
-}
+getData(
+  ((data) => {
+    const cardsFragment = createAdvertArray(data);
+    createCards(cardsFragment);
+  }),
+  ((err) => {
+    console.log(err);
+  })
+);
