@@ -90,8 +90,7 @@ noUiSlider.create(priceSlider, {
   step: 1,
 });
 priceSlider.noUiSlider.on('update', () => {
-  formPrice.value = priceSlider.noUiSlider.get();
-  formPrice.value = setDigitsAfterPoint(formPrice.value, 0);
+  formPrice.value = setDigitsAfterPoint(priceSlider.noUiSlider.get(), 0);
   pristine.validate(formPrice);
 });
 
