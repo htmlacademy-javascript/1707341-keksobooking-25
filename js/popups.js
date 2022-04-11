@@ -1,11 +1,11 @@
 const errorMessageTemplateContent = document.querySelector('#error').content;
 const errorMessageTemplate = errorMessageTemplateContent.querySelector('.error');
-
+//функция для удаление сообщения и остановки обработчиков
 const removePopup = (popup, controller) => {
   popup.remove();
   controller.abort();
 };
-
+//обработчики
 const onPopupEscKeydown = (evt, popup, controller) => {
   if (evt.key === 'Escape') {
     evt.preventDefault();
@@ -27,7 +27,7 @@ const addPopupButtonHandler = (button, popup, controller) => {
     removePopup(popup, controller);
   }, {signal: controller.signal});
 };
-
+//создание сообщений при отправке формы
 const createSubmitPopup = (template) => {
   const popup = template.cloneNode(true);
   const controller = new AbortController();
@@ -38,7 +38,7 @@ const createSubmitPopup = (template) => {
   addWindowPopupHandler(popup, controller);
   document.querySelector('body').appendChild(popup);
 };
-
+//создание сообщения при ошибке загрузки похожих объявлений
 const createAdvertErrorPopup = () => {
   const popup = errorMessageTemplate.cloneNode(true);
   const text = popup.querySelector('.error__message');

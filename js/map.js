@@ -90,7 +90,7 @@ const createCards = (cardsFragment) => {
       .bindPopup(card);
   }
 };
-
+//создание объявлений на основе полученных данных
 getData(
   ((data) => {
     const cardsFragment = createAdvertArray(data);
@@ -100,7 +100,7 @@ getData(
     createAdvertErrorPopup();
   })
 );
-
+//сброс карты к стандартному виду
 const resetMap = () => {
   mainLatLng = defaultLatLng;
   mainPinMarker.setLatLng({
