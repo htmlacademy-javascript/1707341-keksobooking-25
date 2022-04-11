@@ -1,9 +1,18 @@
-import {setDigitsAfterPoint} from './form-util.js';
+import {sendData} from './api.js';
+import {setDigitsAfterPoint} from './util.js';
+import {createSubmitPopup} from './popups.js';
+import {resetMap} from './map.js';
+
 const form = document.querySelector('.ad-form');
 const formPrice = form.querySelector('#price');
-
+const submitButton = form.querySelector('.ad-form__submit');
+const errorMessageTemplateContent = document.querySelector('#error').content;
+const errorMessageTemplate = errorMessageTemplateContent.querySelector('.error');
+const successMessageTemplateContent = document.querySelector('#success').content;
+const successMessageTemplate = successMessageTemplateContent.querySelector('.success');
+const resetButton = form.querySelector('.ad-form__reset');
 // проставление всем полям ввода с аттрибутами стандартных сообщений об ошибке
-const setInputErrorMessages = function(formWithInputs) {
+const setInputErrorMessages = (formWithInputs)  => {
   const inputs = formWithInputs.querySelectorAll('fieldset input');
   for (let i = 0; i < inputs.length; i++){
     if (inputs[i].hasAttribute('required')) {
@@ -44,7 +53,7 @@ const pristine = new Pristine(form, {
 const formType = form.querySelector('#type');
 formPrice.min = formPricePlaceholder;
 //установление минимальной цены в зависимости от типа жилья
-const setMinPrice = function() {
+const setMinPrice = () => {
   const type = formType.value;
   let minPrice = 0;
   switch (type) {
@@ -82,7 +91,6 @@ formType.addEventListener ('change', () =>{
 const priceSlider = form.querySelector('.ad-form__slider');
 noUiSlider.create(priceSlider, {
   range: {
-    //не знаю, нужно ли менять минимальное значение слайдера при смене типа жилья, учитывая, что в текстовом поле при изменении типа жилья текущее значение не меняется
     min: 0,
     max: Number(formPrice.max),
   },
@@ -127,15 +135,48 @@ pristine.addValidator(formCapacity, (value) => {
   }
   return false;
 }, 'Недопустимое значение');
-formRooms.addEventListener ('change', () =>{
+formRooms.addEventListener ('change', () => {
   pristine.validate(formCapacity);
 });
+
+const blockSubmitButton = () => {
+  submitButton.disabled = true;
+  submitButton.textContent = 'Публикация...';
+};
+const unblockSubmitButton = () => {
+  submitButton.disabled = false;
+  submitButton.textContent = 'Опубликовать';
+};
 
 //отправка формы
 form.addEventListener('submit', (evt) => {
   evt.preventDefault();
   const isValid = pristine.validate();
   if (isValid) {
-    form.submit();
+    blockSubmitButton();
+    sendData(
+      () => {
+        form.reset();
+        formType.value = 'flat';
+        setMinPrice();
+        resetMap();
+        createSubmitPopup(successMessageTemplate);
+        unblockSubmitButton();
+      },
+      () => {
+        createSubmitPopup(errorMessageTemplate);
+        unblockSubmitButton();
+      },
+      new FormData(form),
+    );
   }
+});
+
+//кнопка сбросить
+resetButton.addEventListener('click', (evt) => {
+  evt.preventDefault();
+  form.reset();
+  formType.value = 'flat';
+  setMinPrice();
+  resetMap();
 });

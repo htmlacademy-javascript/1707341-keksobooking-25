@@ -1,6 +1,8 @@
-import {enablePage, disablePage, setDigitsAfterPoint} from './form-util.js';
+import {enablePage, disablePage, setDigitsAfterPoint} from './util.js';
 import {createAdvertArray} from './cards.js';
 import {getData} from './api.js';
+import {createAdvertErrorPopup} from './popups.js';
+
 disablePage();
 //инициализация карты
 const map = L.map('map-canvas')
@@ -17,10 +19,12 @@ L.tileLayer(
 ).addTo(map);
 
 //главная метка
-let mainLatLng = {
+const defaultLatLng = {
   lat: 35.68948,
   lng: 139.69171,
 };
+
+let mainLatLng = defaultLatLng;
 
 const mainPinIcon = L.icon({
   iconUrl: './img/main-pin.svg',
@@ -41,7 +45,7 @@ const mainPinMarker = L.marker(
 
 mainPinMarker.addTo(map);
 
-const setDigitsLatLng = function (object) {
+const setDigitsLatLng = (object) => {
   object.lat = setDigitsAfterPoint(object.lat, 5);
   object.lng = setDigitsAfterPoint(object.lng, 5);
 };
@@ -49,7 +53,7 @@ const setDigitsLatLng = function (object) {
 //обновление строки координат в форме
 const address = document.querySelector('#address');
 
-const updateAddress = function() {
+const updateAddress = () => {
   address.value = `${mainLatLng.lat}, ${mainLatLng.lng}`;
 };
 updateAddress();
@@ -67,7 +71,7 @@ const auxPinIcon = L.icon({
   iconAnchor: [20, 40],
 });
 
-const createCards = function (cardsFragment){
+const createCards = (cardsFragment) => {
   const cardsCollection = cardsFragment.children;
   for (const card of cardsCollection){
     const lat = card.querySelector('.popup__lat').textContent;
@@ -92,7 +96,20 @@ getData(
     const cardsFragment = createAdvertArray(data);
     createCards(cardsFragment);
   }),
-  ((err) => {
-    console.log(err);
+  (() => {
+    createAdvertErrorPopup();
   })
 );
+
+const resetMap = () => {
+  mainLatLng = defaultLatLng;
+  mainPinMarker.setLatLng({
+    lat: defaultLatLng.lat,
+    lng: defaultLatLng.lng,
+  });
+  updateAddress();
+  map.closePopup();
+  map.setView([defaultLatLng.lat, defaultLatLng.lng], 10);
+};
+
+export {resetMap};
