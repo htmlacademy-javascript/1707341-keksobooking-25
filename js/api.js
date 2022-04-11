@@ -19,9 +19,6 @@ const sendData = (onSuccess, onFail, body) => {
     'https://25.javascript.pages.academy/keksobooking',
     {
       method: 'POST',
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
       body,
     })
     .then((response) => {

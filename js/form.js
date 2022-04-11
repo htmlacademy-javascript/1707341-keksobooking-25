@@ -158,7 +158,8 @@ form.addEventListener('submit', (evt) => {
       () => {
         form.reset();
         formType.value = 'flat';
-        setMinPrice();
+        formPrice.setAttribute('min', 5000);
+        formPrice.setAttribute('placeholder', 5000);
         resetMap();
         createSubmitPopup(successMessageTemplate);
         unblockSubmitButton();
@@ -177,6 +178,7 @@ resetButton.addEventListener('click', (evt) => {
   evt.preventDefault();
   form.reset();
   formType.value = 'flat';
-  setMinPrice();
+  formPrice.setAttribute('min', 5000);
+  formPrice.setAttribute('placeholder', 5000);
   resetMap();
 });
