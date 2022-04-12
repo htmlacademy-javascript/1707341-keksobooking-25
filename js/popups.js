@@ -35,7 +35,6 @@ const createSubmitPopup = (template) => {
     addPopupButtonHandler(popup.querySelector('button'), popup, controller);
   }
   addEscPopupHandler(popup, controller);
-  addWindowPopupHandler(popup, controller);
   document.querySelector('body').appendChild(popup);
 };
 //создание сообщения при ошибке загрузки похожих объявлений
