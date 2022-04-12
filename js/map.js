@@ -1,13 +1,13 @@
-import {enablePage, disablePage, setDigitsAfterPoint} from './util.js';
+import {enableFilter, enableForm, disablePage, setDigitsAfterPoint, debounce} from './util.js';
 import {createAdvertArray} from './cards.js';
 import {getData} from './api.js';
 import {createAdvertErrorPopup} from './popups.js';
-
+import {getFilteredArray, resetFilters} from './filters.js';
 disablePage();
 //инициализация карты
 const map = L.map('map-canvas')
   .on('load', () => {
-    enablePage();
+    enableForm();
   })
   .setView ([35.68948, 139.69171], 10);
 
@@ -71,8 +71,11 @@ const auxPinIcon = L.icon({
   iconAnchor: [20, 40],
 });
 
+const advertMarkerGroup = L.layerGroup().addTo(map);
+
 const createCards = (cardsFragment) => {
   const cardsCollection = cardsFragment.children;
+  advertMarkerGroup.clearLayers();
   for (const card of cardsCollection){
     const lat = card.querySelector('.popup__lat').textContent;
     const lng = card.querySelector('.popup__lng').textContent;
@@ -86,22 +89,55 @@ const createCards = (cardsFragment) => {
       },
     );
     marker
-      .addTo(map)
+      .addTo(advertMarkerGroup)
       .bindPopup(card);
   }
 };
 //создание объявлений на основе полученных данных
+let advertServerData = [];
+let documentFragment = null;
+const MAX_CARDS = 10;
+const DEBOUNCE_DELAY = 500;
+const filterForm = document.querySelector('.map__filters');
+
+const modifyDocumentFragment = (array) => {
+  documentFragment = createAdvertArray(array, MAX_CARDS);
+};
+
 getData(
   ((data) => {
-    const cardsFragment = createAdvertArray(data);
-    createCards(cardsFragment);
+    advertServerData = data;
+    enableFilter();
+    const filteredData = advertServerData;
+    modifyDocumentFragment(filteredData);
+    createCards(documentFragment);
   }),
   (() => {
     createAdvertErrorPopup();
   })
 );
+
+const changeCards = (dataArray) => {
+  const filteredArray = getFilteredArray(dataArray);
+  modifyDocumentFragment(filteredArray);
+  createCards(documentFragment);
+};
+const setMapFilters = (cb) => {
+  filterForm.addEventListener('change', () => {
+    map.closePopup();
+    cb();
+  });
+};
+setMapFilters(debounce(
+  () => {
+    changeCards(advertServerData);
+  },
+  DEBOUNCE_DELAY,
+));
 //сброс карты к стандартному виду
 const resetMap = () => {
+  resetFilters();
+  changeCards(advertServerData);
   mainLatLng = defaultLatLng;
   mainPinMarker.setLatLng({
     lat: defaultLatLng.lat,

@@ -2,8 +2,11 @@ const cardsTemplate = document.querySelector('#card').content;
 const newCardTemplate = cardsTemplate.querySelector('.popup');
 
 //создание карточки объявления
-const createAdvertArray = function (dataArray) {
+const createAdvertArray = function (dataArray, length) {
   const cardsFragment = document.createDocumentFragment();
+  if (dataArray.length > length){
+    dataArray = dataArray.slice(0, length);
+  }
   dataArray.forEach((advert) => {
     const newCard = newCardTemplate.cloneNode(true);
     const offer = advert.offer;
@@ -30,7 +33,29 @@ const createAdvertArray = function (dataArray) {
     if (offer.rooms === undefined || offer.guests === undefined) {
       setTextValue('.popup__text--capacity', undefined);
     } else {
-      setTextValue('.popup__text--capacity', `${offer.rooms} комнаты для ${offer.guests} гостей`);
+      let roomsText = '';
+      let guestsText = '';
+      switch(offer.rooms) {
+        case 1:
+          roomsText = `${offer.rooms} комната `;
+          break;
+        case 100:
+          roomsText = `${offer.rooms} комнат `;
+          break;
+        default:
+          roomsText = `${offer.rooms} комнаты `;
+      }
+      switch(offer.guests) {
+        case 0:
+          guestsText = 'не для гостей';
+          break;
+        case 1:
+          guestsText = `для ${offer.guests} гостя`;
+          break;
+        default:
+          guestsText = `для ${offer.guests} гостей`;
+      }
+      setTextValue('.popup__text--capacity', `${roomsText}${guestsText}`);
     }
     //время заезда и выезда
     if (offer.checkin === undefined || offer.checkout === undefined) {
@@ -53,6 +78,8 @@ const createAdvertArray = function (dataArray) {
           return 'Дворец';
         case 'hotel':
           return 'Отель';
+        default:
+          return '';
       }
     };
     setTextValue('.popup__type', getType(offer.type));
