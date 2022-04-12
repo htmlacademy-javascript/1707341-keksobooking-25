@@ -100,10 +100,12 @@ const MAX_CARDS = 10;
 const DEBOUNCE_DELAY = 500;
 const filterForm = document.querySelector('.map__filters');
 
+//обновление фрагмента с данными
 const modifyDocumentFragment = (array) => {
   documentFragment = createAdvertArray(array, MAX_CARDS);
 };
 
+//получение данных с сервера и первая настройка карты
 getData(
   ((data) => {
     advertServerData = data;
@@ -117,23 +119,28 @@ getData(
   })
 );
 
+//обновление меток на карте в соответствии с фильтрами
 const changeCards = (dataArray) => {
   const filteredArray = getFilteredArray(dataArray);
   modifyDocumentFragment(filteredArray);
   createCards(documentFragment);
 };
+
+//добавление фильтру обработчика и устранение дребезга
 const setMapFilters = (cb) => {
   filterForm.addEventListener('change', () => {
     map.closePopup();
     cb();
   });
 };
+
 setMapFilters(debounce(
   () => {
     changeCards(advertServerData);
   },
   DEBOUNCE_DELAY,
 ));
+
 //сброс карты к стандартному виду
 const resetMap = () => {
   resetFilters();

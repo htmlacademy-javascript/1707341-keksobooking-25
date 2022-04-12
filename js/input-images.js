@@ -20,7 +20,6 @@ photoInput.addEventListener('change', () =>{
 
   const matches = FILE_TYPES.some((it) => fileName.endsWith(it));
 
-
   if (matches) {
     if (photoContainer.querySelector('.preview')) {
       photoContainer.removeChild(photoContainer.querySelector('.preview'));

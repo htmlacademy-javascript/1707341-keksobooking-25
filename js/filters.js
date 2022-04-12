@@ -1,5 +1,5 @@
 const filters = document.querySelector('.map__filters');
-
+//фильтры на каждую опцию фильтрации
 const typeFilter = ((advert) => {
   const filterType = filters.querySelector('#housing-type').value;
   const advertType = advert.offer.type;
@@ -60,7 +60,7 @@ const featuresFilter = ((advert) => {
   }
   return false;
 });
-
+//сумма всех фильтров с массивом в результате
 const getFilteredArray = (originalArray) => {
   let filteredArray = originalArray.filter(typeFilter);
   filteredArray = filteredArray.filter(priceFilter);
