@@ -36,7 +36,7 @@ const enableFilter = () => {
 };
 
 //приведение к числу и установление знаков после запятой
-const setDigitsAfterPoint = function (numberString, digits) {
+const setDigitsAfterPoint = (numberString, digits) => {
   const newString = Number.parseFloat(numberString).toFixed(digits);
   return newString;
 };
