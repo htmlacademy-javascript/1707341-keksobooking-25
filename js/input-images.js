@@ -1,9 +1,10 @@
 const FILE_TYPES = ['jpg', 'jpeg', 'png'];
+const PHOTO_PREVIEW_WIDTH = '70';
+const PHOTO_PREVIEW_HEIGHT = '70';
 const avatarInput = document.querySelector('#avatar');
 const avatarPreview = document.querySelector('.ad-form-header__preview img');
 const photoInput = document.querySelector('#images');
 const photoContainer = document.querySelector('.ad-form__photo');
-
 avatarInput.addEventListener('change', () => {
   const file = avatarInput.files[0];
   const fileName = file.name.toLowerCase();
@@ -28,8 +29,8 @@ photoInput.addEventListener('change', () =>{
     photoPreview.classList.add('preview');
     photoPreview.src = URL.createObjectURL(file);
     photoPreview.alt = 'Фото пользователя';
-    photoPreview.width = '70';
-    photoPreview.height = '70';
+    photoPreview.width = PHOTO_PREVIEW_WIDTH;
+    photoPreview.height = PHOTO_PREVIEW_HEIGHT;
     photoContainer.appendChild(photoPreview);
   }
 });

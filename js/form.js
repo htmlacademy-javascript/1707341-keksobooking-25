@@ -3,6 +3,12 @@ import {setDigitsAfterPoint} from './util.js';
 import {createSubmitPopup} from './popups.js';
 import {resetMap} from './map.js';
 
+const BUNGALOW_MIN_PRICE = 0;
+const FLAT_MIN_PRICE = 1000;
+const HOTEL_MIN_PRICE = 3000;
+const HOUSE_MIN_PRICE = 5000;
+const PALACE_MIN_PRICE = 10000;
+const SET_DIGITS_SLIDER = 0;
 const form = document.querySelector('.ad-form');
 const formPrice = form.querySelector('#price');
 const submitButton = form.querySelector('.ad-form__submit');
@@ -57,28 +63,48 @@ const pristine = new Pristine(form, {
 
 //поля типа жилья и цены за ночь
 formPrice.min = formPricePlaceholder;
+
+// слайдер цены
+const priceSlider = form.querySelector('.ad-form__slider');
+noUiSlider.create(priceSlider, {
+  range: {
+    min: Number(formPrice.min),
+    max: Number(formPrice.max),
+  },
+  start: Number(formPrice.placeholder),
+  step: 1,
+});
+
 //установление минимальной цены в зависимости от типа жилья
 const setMinPrice = () => {
   const type = formType.value;
   let minPrice = 0;
   switch (type) {
     case 'bungalow':
+      minPrice = BUNGALOW_MIN_PRICE;
       break;
     case 'flat':
-      minPrice = 1000;
+      minPrice = FLAT_MIN_PRICE;
       break;
     case 'hotel':
-      minPrice = 3000;
+      minPrice = HOTEL_MIN_PRICE;
       break;
     case 'house':
-      minPrice = 5000;
+      minPrice = HOUSE_MIN_PRICE;
       break;
     case 'palace':
-      minPrice = 10000;
+      minPrice = PALACE_MIN_PRICE;
       break;
   }
   formPrice.setAttribute('min', minPrice);
   formPrice.setAttribute('placeholder', minPrice);
+  priceSlider.noUiSlider.updateOptions({
+    range: {
+      min: minPrice,
+      max: Number(formPrice.max),
+    },
+    start: Number(formPrice.value),
+  });
 };
 
 //кастомный валидатор для минимальной цены
@@ -87,24 +113,17 @@ pristine.addValidator(formPrice, (value) => {
   return valueNumber >= formPrice.min;
 }, () => `Минимальное значение ${formPrice.min}`);
 
-formType.addEventListener ('change', () =>{
+formType.addEventListener ('change', () => {
   setMinPrice();
   pristine.validate(formPrice);
 });
 
-// слайдер цены
-const priceSlider = form.querySelector('.ad-form__slider');
-noUiSlider.create(priceSlider, {
-  range: {
-    min: 0,
-    max: Number(formPrice.max),
-  },
-  start: Number(formPrice.placeholder),
-  step: 1,
+formPrice.addEventListener('change', () => {
+  priceSlider.noUiSlider.set(Number(formPrice.value));
 });
 
-priceSlider.noUiSlider.on('update', () => {
-  formPrice.value = setDigitsAfterPoint(priceSlider.noUiSlider.get(), 0);
+priceSlider.noUiSlider.on('slide', () => {
+  formPrice.value = setDigitsAfterPoint(priceSlider.noUiSlider.get(), SET_DIGITS_SLIDER);
   pristine.validate(formPrice);
 });
 
@@ -156,8 +175,8 @@ form.addEventListener('submit', (evt) => {
       () => {
         form.reset();
         formType.value = 'flat';
-        formPrice.setAttribute('min', 5000);
-        formPrice.setAttribute('placeholder', 5000);
+        formPrice.setAttribute('min', FLAT_MIN_PRICE);
+        formPrice.setAttribute('placeholder', FLAT_MIN_PRICE);
         resetMap();
         createSubmitPopup(successMessageTemplate);
         unblockSubmitButton();
@@ -176,7 +195,7 @@ resetButton.addEventListener('click', (evt) => {
   evt.preventDefault();
   form.reset();
   formType.value = 'flat';
-  formPrice.setAttribute('min', 5000);
-  formPrice.setAttribute('placeholder', 5000);
+  formPrice.setAttribute('min', FLAT_MIN_PRICE);
+  formPrice.setAttribute('placeholder', FLAT_MIN_PRICE);
   resetMap();
 });

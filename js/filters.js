@@ -1,13 +1,15 @@
 const filters = document.querySelector('.map__filters');
-const filterType = filters.querySelector('#housing-type');
-const filterPrice = filters.querySelector('#housing-price');
-const filterRooms = filters.querySelector('#housing-rooms');
-const filterGuests = filters.querySelector('#housing-guests');
-const filterFeatures = filters.querySelector('#housing-features');
+const typeFilter = filters.querySelector('#housing-type');
+const priceFilter = filters.querySelector('#housing-price');
+const roomsFilter = filters.querySelector('#housing-rooms');
+const guestsFilter = filters.querySelector('#housing-guests');
+const featuresFilter = filters.querySelector('#housing-features');
+const LOW_PRICE = 10000;
+const HIGH_PRICE = 50000;
 
 //фильтры на каждую опцию фильтрации
-const typeFilter = ((advert) => {
-  const filterValue = filterType.value;
+const filterType = ((advert) => {
+  const filterValue = typeFilter.value;
   const advertType = advert.offer.type;
   if (filterValue === 'any') {
     return true;
@@ -15,23 +17,23 @@ const typeFilter = ((advert) => {
   return filterValue === advertType;
 });
 
-const priceFilter = ((advert) => {
-  const filterValue = filterPrice.value;
+const filterPrice = ((advert) => {
+  const filterValue = priceFilter.value;
   const advertPrice = advert.offer.price;
   switch (filterValue) {
     case 'any':
       return true;
     case 'middle':
-      return advertPrice <= 50000 && advertPrice >= 10000;
+      return advertPrice <= HIGH_PRICE && advertPrice >= LOW_PRICE;
     case 'low':
-      return advertPrice < 10000;
+      return advertPrice < LOW_PRICE;
     case 'high':
-      return advertPrice > 50000;
+      return advertPrice > HIGH_PRICE;
   }
 });
 
-const roomsFilter = ((advert) => {
-  const filterValue = filterRooms.value;
+const filterRooms = ((advert) => {
+  const filterValue = roomsFilter.value;
   const advertRooms = advert.offer.rooms;
   if (filterValue === 'any'){
     return true;
@@ -39,8 +41,8 @@ const roomsFilter = ((advert) => {
   return Number(filterValue) === advertRooms;
 });
 
-const guestsFilter = ((advert) => {
-  const filterValue = filterGuests.value;
+const filterGuests = ((advert) => {
+  const filterValue = guestsFilter.value;
   const advertGuests = advert.offer.guests;
   if (filterValue === 'any'){
     return true;
@@ -48,17 +50,17 @@ const guestsFilter = ((advert) => {
   return Number(filterValue) === advertGuests;
 });
 
-const featuresFilter = ((advert) => {
-  const filterFeaturesChecked = filterFeatures.querySelectorAll('input:checked');
-  const checkedArray = [];
-  for (const feature of filterFeaturesChecked) {
-    checkedArray.push(feature.value);
+const filterFeatures = ((advert) => {
+  const checkedFeaturesFilter = featuresFilter.querySelectorAll('input:checked');
+  const checkedFeatures = [];
+  for (const feature of checkedFeaturesFilter) {
+    checkedFeatures.push(feature.value);
   }
-  if (!checkedArray.length) {
+  if (!checkedFeatures.length) {
     return true;
   }
   if ('features' in advert.offer) {
-    return checkedArray.every((feature) => {
+    return checkedFeatures.every((feature) => {
       const advertString = `-${advert.offer.features.join('-')}`;
       return advertString.includes(`-${feature}`);
     });
@@ -67,7 +69,7 @@ const featuresFilter = ((advert) => {
 });
 
 //сумма всех фильтров с массивом в результате
-const getFilteredArray = (originalArray) => originalArray.filter(typeFilter).filter(priceFilter).filter(roomsFilter).filter(guestsFilter).filter(featuresFilter);
+const getFilteredArray = (originalArray) => originalArray.filter(filterType).filter(filterPrice).filter(filterRooms).filter(filterGuests).filter(filterFeatures);
 
 const resetFilters = () => {
   filters.reset();

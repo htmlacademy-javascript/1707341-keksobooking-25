@@ -40,6 +40,7 @@ const createSubmitPopup = (template) => {
   if (popup.querySelector('button')) {
     addButtonClickHandler(popup.querySelector('button'), popup, controller);
   }
+  addWindowClickHandler(popup, controller);
   addEscKeydownHandler(popup, controller);
   body.appendChild(popup);
 };
