@@ -8,26 +8,26 @@ const removePopup = (popup, controller) => {
 };
 
 //обработчики
-const escPopupHandler = (evt, popup, controller) => {
+const escKeydownHandler = (evt, popup, controller) => {
   if (evt.key === 'Escape') {
     evt.preventDefault();
     removePopup(popup, controller);
   }
 };
 
-const addWindowPopupHandler = (popup, controller) => {
+const addWindowClickHandler = (popup, controller) => {
   window.addEventListener('click', () => {
     removePopup(popup, controller);
   }, {signal: controller.signal});
 };
 
-const addEscPopupHandler = (popup, controller) => {
+const addEscKeydownHandler = (popup, controller) => {
   window.addEventListener('keydown', (evt) => {
-    escPopupHandler(evt, popup, controller);
+    escKeydownHandler(evt, popup, controller);
   }, {signal: controller.signal});
 };
 
-const addButtonPopupHandler = (button, popup, controller) => {
+const addButtonClickHandler = (button, popup, controller) => {
   button.addEventListener('click', () => {
     removePopup(popup, controller);
   }, {signal: controller.signal});
@@ -38,9 +38,9 @@ const createSubmitPopup = (template) => {
   const popup = template.cloneNode(true);
   const controller = new AbortController();
   if (popup.querySelector('button')) {
-    addButtonPopupHandler(popup.querySelector('button'), popup, controller);
+    addButtonClickHandler(popup.querySelector('button'), popup, controller);
   }
-  addEscPopupHandler(popup, controller);
+  addEscKeydownHandler(popup, controller);
   body.appendChild(popup);
 };
 
@@ -52,9 +52,9 @@ const createAdvertErrorPopup = () => {
   const controller = new AbortController();
   text.textContent = 'При запросе информации о похожих объявлениях произошла ошибка. Похожие объявления не будут отображены';
   button.textContent = 'ОК';
-  addEscPopupHandler(popup, controller);
-  addButtonPopupHandler(button, popup, controller);
-  addWindowPopupHandler(popup, controller);
+  addEscKeydownHandler(popup, controller);
+  addButtonClickHandler(button, popup, controller);
+  addWindowClickHandler(popup, controller);
   body.appendChild(popup);
 };
 export {createAdvertErrorPopup, createSubmitPopup};
