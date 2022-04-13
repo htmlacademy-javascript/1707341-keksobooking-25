@@ -11,6 +11,12 @@ const errorMessageTemplate = errorMessageTemplateContent.querySelector('.error')
 const successMessageTemplateContent = document.querySelector('#success').content;
 const successMessageTemplate = successMessageTemplateContent.querySelector('.success');
 const resetButton = form.querySelector('.ad-form__reset');
+const formType = form.querySelector('#type');
+const formTimein = form.querySelector('#timein');
+const formTimeout = form.querySelector('#timeout');
+const formCapacity = form.querySelector('#capacity');
+const formRooms = form.querySelector('#room_number');
+
 // проставление всем полям ввода с аттрибутами стандартных сообщений об ошибке
 const setInputErrorMessages = (formWithInputs)  => {
   const inputs = formWithInputs.querySelectorAll('fieldset input');
@@ -50,7 +56,6 @@ const pristine = new Pristine(form, {
 });
 
 //поля типа жилья и цены за ночь
-const formType = form.querySelector('#type');
 formPrice.min = formPricePlaceholder;
 //установление минимальной цены в зависимости от типа жилья
 const setMinPrice = () => {
@@ -97,28 +102,20 @@ noUiSlider.create(priceSlider, {
   start: Number(formPrice.placeholder),
   step: 1,
 });
+
 priceSlider.noUiSlider.on('update', () => {
   formPrice.value = setDigitsAfterPoint(priceSlider.noUiSlider.get(), 0);
   pristine.validate(formPrice);
 });
 
 //синхронизация времени заезда и выезда
-const timeinSelect = form.querySelector('#timein');
-const timeoutSelect = form.querySelector('#timeout');
-
-timeinSelect.addEventListener ('change', () => {
-  const selectValue = timeinSelect.value;
-  timeoutSelect.value = selectValue;
+formTimein.addEventListener ('change', () => {
+  formTimeout.value = formTimein.value;
 });
 
-timeoutSelect.addEventListener ('change', () => {
-  const selectValue = timeoutSelect.value;
-  timeinSelect.value = selectValue;
+formTimeout.addEventListener ('change', () => {
+  formTimein.value = formTimeout.value;
 });
-
-//поля количества комнат и количества мест
-const formCapacity = form.querySelector('#capacity');
-const formRooms = form.querySelector('#room_number');
 
 //кастомный валидатор для количества мест
 pristine.addValidator(formCapacity, (value) => {
@@ -135,6 +132,7 @@ pristine.addValidator(formCapacity, (value) => {
   }
   return false;
 }, 'Недопустимое значение');
+
 formRooms.addEventListener ('change', () => {
   pristine.validate(formCapacity);
 });

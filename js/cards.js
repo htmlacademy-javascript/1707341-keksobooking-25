@@ -2,7 +2,7 @@ const cardsTemplate = document.querySelector('#card').content;
 const newCardTemplate = cardsTemplate.querySelector('.popup');
 
 //создание карточки объявления
-const createAdvertArray = function (dataArray, length) {
+const createAdvertArray = (dataArray, length) => {
   const cardsFragment = document.createDocumentFragment();
   if (dataArray.length > length){
     dataArray = dataArray.slice(0, length);
@@ -10,7 +10,12 @@ const createAdvertArray = function (dataArray, length) {
   dataArray.forEach((advert) => {
     const newCard = newCardTemplate.cloneNode(true);
     const offer = advert.offer;
-    const setTextValue = function (classSelector, textValue){
+    const newCardFeatureList = newCard.querySelector('.popup__features');
+    const newCardFeatures = newCardFeatureList.querySelectorAll('.popup__feature');
+    const avatar = newCard.querySelector('.popup__avatar');
+    const newCardPhotos = newCard.querySelector('.popup__photos');
+    const newCardPhotoTemplate = newCardPhotos.querySelector('.popup__photo');
+    const setTextValue = (classSelector, textValue) => {
       if (!textValue) {
         newCard.querySelector(classSelector).remove();
       } else {
@@ -66,7 +71,7 @@ const createAdvertArray = function (dataArray, length) {
     //описание
     setTextValue('.popup__description', offer.description);
     //тип здания
-    const getType = function (source){
+    const getType = (source) => {
       switch (source) {
         case 'flat':
           return 'Квартира';
@@ -84,8 +89,6 @@ const createAdvertArray = function (dataArray, length) {
     };
     setTextValue('.popup__type', getType(offer.type));
     //доступные удобства
-    const newCardFeatureList = newCard.querySelector('.popup__features');
-    const newCardFeatures = newCardFeatureList.querySelectorAll('.popup__feature');
     if (offer.features === undefined ) {
       newCardFeatureList.remove();
     } else {
@@ -99,14 +102,11 @@ const createAdvertArray = function (dataArray, length) {
       });
     }
     //аватарка
-    const avatar = newCard.querySelector('.popup__avatar');
     avatar.src = advert.author.avatar;
-    avatar.onerror = function () {
+    avatar.onerror = () => {
       avatar.src = 'img/avatars/default.png';
     };
     //фотографии
-    const newCardPhotos = newCard.querySelector('.popup__photos');
-    const newCardPhotoTemplate = newCardPhotos.querySelector('.popup__photo');
     if (offer.photos !== undefined) {
       for (let i = 0; i < offer.photos.length; i++) {
         const newCardPhoto = newCardPhotoTemplate.cloneNode(true);

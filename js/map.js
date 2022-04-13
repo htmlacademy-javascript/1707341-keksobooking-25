@@ -3,7 +3,21 @@ import {createAdvertArray} from './cards.js';
 import {getData} from './api.js';
 import {createAdvertErrorPopup} from './popups.js';
 import {getFilteredArray, resetFilters} from './filters.js';
+
+const MAX_CARDS = 10;
+const DEBOUNCE_DELAY = 500;
+const filterForm = document.querySelector('.map__filters');
+const address = document.querySelector('#address');
+const defaultLatLng = {
+  lat: 35.68948,
+  lng: 139.69171,
+};
+let advertServerData = [];
+let documentFragment = null;
+let mainLatLng = defaultLatLng;
+
 disablePage();
+
 //инициализация карты
 const map = L.map('map-canvas')
   .on('load', () => {
@@ -19,13 +33,6 @@ L.tileLayer(
 ).addTo(map);
 
 //главная метка
-const defaultLatLng = {
-  lat: 35.68948,
-  lng: 139.69171,
-};
-
-let mainLatLng = defaultLatLng;
-
 const mainPinIcon = L.icon({
   iconUrl: './img/main-pin.svg',
   iconSize: [52, 52],
@@ -51,8 +58,6 @@ const setDigitsLatLng = (object) => {
 };
 
 //обновление строки координат в форме
-const address = document.querySelector('#address');
-
 const updateAddress = () => {
   address.value = `${mainLatLng.lat}, ${mainLatLng.lng}`;
 };
@@ -93,13 +98,8 @@ const createCards = (cardsFragment) => {
       .bindPopup(card);
   }
 };
-//создание объявлений на основе полученных данных
-let advertServerData = [];
-let documentFragment = null;
-const MAX_CARDS = 10;
-const DEBOUNCE_DELAY = 500;
-const filterForm = document.querySelector('.map__filters');
 
+//создание объявлений на основе полученных данных
 //обновление фрагмента с данными
 const modifyDocumentFragment = (array) => {
   documentFragment = createAdvertArray(array, MAX_CARDS);
