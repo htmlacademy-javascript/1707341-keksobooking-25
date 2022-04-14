@@ -2,6 +2,7 @@ import {sendData} from './api.js';
 import {setDigitsAfterPoint} from './util.js';
 import {createSubmitPopup} from './popups.js';
 import {resetMap} from './map.js';
+import {removePictures} from './input-images.js';
 
 const BUNGALOW_MIN_PRICE = 0;
 const FLAT_MIN_PRICE = 1000;
@@ -50,7 +51,7 @@ const setInputErrorMessages = (formWithInputs)  => {
 setInputErrorMessages(form);
 
 //фикс стандартной ошибки минимального значения для цены
-const formPricePlaceholder = formPrice.min;
+const formPriceTemporary = formPrice.min;
 formPrice.min = Number.NEGATIVE_INFINITY;
 
 // валидатор
@@ -62,7 +63,7 @@ const pristine = new Pristine(form, {
 });
 
 //поля типа жилья и цены за ночь
-formPrice.min = formPricePlaceholder;
+formPrice.min = formPriceTemporary;
 
 // слайдер цены
 const priceSlider = form.querySelector('.ad-form__slider');
@@ -175,9 +176,9 @@ form.addEventListener('submit', (evt) => {
       () => {
         form.reset();
         formType.value = 'flat';
-        formPrice.setAttribute('min', FLAT_MIN_PRICE);
-        formPrice.setAttribute('placeholder', FLAT_MIN_PRICE);
+        setMinPrice();
         resetMap();
+        removePictures();
         createSubmitPopup(successMessageTemplate);
         unblockSubmitButton();
       },
@@ -195,7 +196,7 @@ resetButton.addEventListener('click', (evt) => {
   evt.preventDefault();
   form.reset();
   formType.value = 'flat';
-  formPrice.setAttribute('min', FLAT_MIN_PRICE);
-  formPrice.setAttribute('placeholder', FLAT_MIN_PRICE);
+  setMinPrice();
   resetMap();
+  removePictures();
 });
